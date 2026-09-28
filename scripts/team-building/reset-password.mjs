@@ -1,7 +1,10 @@
 // Local-only instructor utility. Never deploy a service-role key to the browser.
 import { createClient } from '@supabase/supabase-js';
 import { createInterface } from 'node:readline/promises';
-import { config } from '../../courses/sts2026/2026-fall/team-building/config.js';
+const course=process.env.TEAM_COURSE||'sts2026';
+if(!['sts2026','eng3510'].includes(course))throw Error('Unsupported course');
+const {config}=await import(`../../courses/${course}/2026-fall/team-building/config.js`);
+console.log(`Target course: ${course.toUpperCase()}`);
 
 const rl=createInterface({input:process.stdin,output:process.stdout});
 const email=(await rl.question('비밀번호를 재설정할 학생의 가입 이메일: ')).trim();

@@ -25,3 +25,5 @@ html[data-lang=ko] .i18n[lang=en]{display:none}html[data-lang=en] .i18n[lang=ko]
 .lang-btn:hover{color:var(--accent)}
 .lang-btn.on{color:var(--accent);font-weight:800;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
 @media(max-width:760px){.lang-switch{margin-left:10px;padding-left:10px;gap:3px}.lang-label{display:none}.lang-btn{font-size:12px;padding:5px 3px}}
+
+@media(max-width:580px){.with-team-building .nav-row{height:auto;min-height:73px;flex-wrap:wrap;gap:8px;padding-top:14px;padding-bottom:14px}.with-team-building .nav-links{gap:15px;flex-wrap:wrap}.with-team-building .nav-links a{padding:8px 0}}

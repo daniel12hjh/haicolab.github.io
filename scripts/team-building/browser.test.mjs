@@ -4,8 +4,14 @@ import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
-const base='http://127.0.0.1:8765/courses/sts2026/2026-fall/team-building/';
-const artifacts=new URL('../../../artifacts/team-building/',import.meta.url);
+const course=process.env.TEAM_COURSE||'sts2026';
+if(!['sts2026','eng3510'].includes(course))throw Error('Unsupported test course');
+const {config}=await import(`../../courses/${course}/2026-fall/team-building/config.js`);
+const base=`http://127.0.0.1:8765/courses/${course}/2026-fall/team-building/`;
+const courseTitle=course==='eng3510'?'인공지능을 위한 데이터분석':'생성형 AI의 이해와 활용';
+const demoSearch=course==='eng3510'?'소설':'동네';
+const demoTitle=course==='eng3510'?'소설 속 인물의 언어는 어떻게 다를까?':'동네 가게의 이야기를 만드는 AI 스튜디오';
+const artifacts=new URL(`../../../artifacts/team-building-${course}/`,import.meta.url);
 await mkdir(artifacts,{recursive:true});
 const browser=await chromium.launch({headless:true});
 const errors=[];
@@ -13,14 +19,15 @@ const page=await browser.newPage({viewport:{width:1440,height:1100}});
 page.on('pageerror',e=>errors.push(e.message));
 await page.goto(base+'?demo=1');
 await page.locator('.card').first().waitFor();
+assert((await page.locator('footer').innerText()).includes(courseTitle));
 assert.equal(await page.locator('.card').count(),3);
 await page.screenshot({path:fileURLToPath(new URL('desktop.png',artifacts)),fullPage:true});
 await page.getByRole('button',{name:'모집 중',exact:true}).click();
 assert.equal(await page.locator('.card').count(),2);
-await page.getByRole('searchbox').fill('동네');
+await page.getByRole('searchbox').fill(demoSearch);
 assert.equal(await page.locator('.card').count(),1);
 await page.locator('.card').click();
-await page.getByRole('heading',{name:'동네 가게의 이야기를 만드는 AI 스튜디오'}).waitFor();
+await page.getByRole('heading',{name:demoTitle}).waitFor();
 await page.setViewportSize({width:390,height:844});
 await page.goto(base+'?demo=1');
 await page.locator('.card').first().waitFor();
@@ -32,7 +39,7 @@ assert.equal(await page.locator('#image').getAttribute('required'),'');
 assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
 console.log('PASS browser: desktop/mobile demo, filters, search, detail, required image, no overflow');
 
-const f=await fixture();const {db,admin,users:[a,b,c],act,post}=f;
+const f=await fixture(course);const {db,admin,users:[a,b,c],act,post}=f;
 const ai=(await post(a)).id;
 await act(b,'apply',{idea_id:ai,message:'조사와 디자인을 함께하고 싶습니다.'});
 await act(c,'comment',{idea_id:ai,body:'<img src=x onerror="window.XSS=true">'});
@@ -40,8 +47,9 @@ const png=Buffer.from(await page.evaluate(()=>{const c=document.createElement('c
 async function userPage(user,viewport={width:1280,height:900}){
  const context=await browser.newContext({viewport});
  const session={access_token:`test-token-${user}`,refresh_token:'test-refresh',token_type:'bearer',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,user:{id:user,aud:'authenticated',role:'authenticated',email:`${user}@example.edu`,app_metadata:{provider:'email'},user_metadata:{}}};
- await context.addInitScript(({session})=>localStorage.setItem('sb-cjenolxbtxcbohuprylg-auth-token',JSON.stringify(session)),{session});
- await context.route('https://cjenolxbtxcbohuprylg.supabase.co/**',async route=>{
+ const storageKey=config.authStorageKey||`sb-${new URL(config.supabaseUrl).hostname.split('.')[0]}-auth-token`;
+ await context.addInitScript(({session,storageKey})=>localStorage.setItem(storageKey,JSON.stringify(session)),{session,storageKey});
+ await context.route(config.supabaseUrl+'/**',async route=>{
   const req=route.request(),url=new URL(req.url());
   const json=async(body,status=200)=>route.fulfill({status,contentType:'application/json',body:JSON.stringify(body)});
   try{

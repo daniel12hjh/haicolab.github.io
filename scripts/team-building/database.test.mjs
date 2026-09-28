@@ -4,7 +4,8 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
-export async function fixture(){
+export async function fixture(course=process.env.TEAM_COURSE||'sts2026'){
+ if(!['sts2026','eng3510'].includes(course))throw Error('Unsupported test course');
  const db=new PGlite();
  await db.exec(`create role anon; create role authenticated; create schema auth; create schema storage;
  create table auth.users(id uuid primary key,email text,raw_user_meta_data jsonb);
@@ -16,7 +17,7 @@ export async function fixture(){
  create function storage.foldername(text) returns text[] language sql as $$select string_to_array($1,'/')$$;
  grant usage on schema storage to authenticated,anon; grant select,insert on storage.objects to authenticated;
  `);
- const results=await db.exec(await readFile(new URL('../../courses/sts2026/2026-fall/team-building/setup.sql',import.meta.url),'utf8'));
+ const results=await db.exec(await readFile(new URL(`../../courses/${course}/2026-fall/team-building/setup.sql`,import.meta.url),'utf8'));
  const code=results.at(-1).rows[0].professor_invite_code;
  async function signup(sn,invite){const id=randomUUID();await db.query('insert into auth.users(id,email,raw_user_meta_data) values($1,$2,$3)',[id,`${sn}@example.edu`,JSON.stringify({student_number:sn,invite_code:invite,role:'admin'})]);return id;}
  async function call(user,fn,args=[]){await db.query("select set_config('request.jwt.claim.sub',$1,false)",[user||'']);await db.exec(`set role ${user?'authenticated':'anon'}`);try{return (await db.query(`select public.${fn}(${args.map((_,i)=>`$${i+1}`).join(',')}) result`,args)).rows[0].result;}finally{await db.exec('reset role');}}

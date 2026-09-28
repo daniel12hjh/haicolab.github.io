@@ -124,6 +124,7 @@ for (const file of pages) {
   c.querySelector('ol').innerHTML=topics.map(t=>'<li>'+t+'</li>').join('');c.querySelector('.btn').textContent='Syllabus (PDF)';
   d.querySelector('a[href^="courses/"]').textContent='Course Website (Korean)';
   c.querySelector('a[href^="courses/"]').textContent='Project Team Building (Korean)';
+  d.querySelector('#eng3510 a[href$="team-building/"]').textContent='Project Team Building (Korean)';
  }
  d.querySelectorAll('.news li').forEach(li=>{const key=li.querySelector('.date').textContent.trim()+'|'+li.querySelector('.kind').textContent.trim();if(news[key])li.querySelector('.txt').innerHTML=news[key];});
  // Shared assets stay in the parent directory; links among English pages stay local.
