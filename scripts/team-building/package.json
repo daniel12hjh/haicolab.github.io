@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "@playwright/test": "1.63.0",
+    "@supabase/supabase-js": "2.117.2",
+    "esbuild": "0.28.2"
+  },
+  "name": "haicolab-team-building-checks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node database.test.mjs",
+    "test:browser": "node browser.test.mjs"
+  }
+}

@@ -123,6 +123,7 @@ for (const file of pages) {
   const topics=['Course orientation and an introduction to the history of AI (online lecture)','Generative AI applications and prompt engineering (weeks 2–3)','Machine learning fundamentals for developing generative AI','Neural models for language: word embeddings and the evolution from RNNs to Transformers (weeks 6–7)','Midterm exam 1','Information retrieval and generative question answering','Computer vision and multimodal AI','Future directions: actionable AI and agents','AI innovation in science, medicine, biology, law, manufacturing, and the arts · Midterm exam 2','Critical evaluation and ethical use of AI outputs','Final presentations of generative AI projects (weeks 14–16)'];
   c.querySelector('ol').innerHTML=topics.map(t=>'<li>'+t+'</li>').join('');c.querySelector('.btn').textContent='Syllabus (PDF)';
   d.querySelector('a[href^="courses/"]').textContent='Course Website (Korean)';
+  c.querySelector('a[href^="courses/"]').textContent='Project Team Building (Korean)';
  }
  d.querySelectorAll('.news li').forEach(li=>{const key=li.querySelector('.date').textContent.trim()+'|'+li.querySelector('.kind').textContent.trim();if(news[key])li.querySelector('.txt').innerHTML=news[key];});
  // Shared assets stay in the parent directory; links among English pages stay local.

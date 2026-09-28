@@ -1,0 +1,2 @@
+# Bundled third-party JavaScript contains significant whitespace in template literals.
+courses/sts2026/2026-fall/team-building/vendor/*.js -whitespace
