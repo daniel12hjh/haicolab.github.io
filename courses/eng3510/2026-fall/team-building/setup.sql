@@ -116,11 +116,50 @@ create function public.tb_is_member() returns boolean language sql stable securi
  select exists(select 1 from team_private.profiles where id=auth.uid());
 $$;
 
+-- Existing shared Auth accounts must claim an ENG3510 invitation separately.
+create or replace function public.tb_enroll(student_number text, invite_code text) returns jsonb
+language plpgsql security definer set search_path='' as $$
+declare
+  who uuid := auth.uid();
+  sn text := btrim(student_number);
+  code text := btrim(invite_code);
+  r team_private.roster;
+  existing_sn text;
+begin
+  if who is null or not exists(select 1 from auth.users where id=who) then
+    raise exception '먼저 기존 계정으로 로그인해 주세요.';
+  end if;
+  -- Serialize enrollment attempts by this account, including different student numbers.
+  perform pg_advisory_xact_lock(hashtextextended(who::text, 3510));
+  select p.student_number into existing_sn from team_private.profiles p where p.id=who;
+  if existing_sn is not null then
+    if existing_sn=sn then return jsonb_build_object('enrolled',true); end if;
+    raise exception '이 계정은 이미 다른 학번으로 ENG3510에 등록되어 있습니다.';
+  end if;
+  select * into r from team_private.roster where team_private.roster.student_number=sn for update;
+  if r.student_number is null or r.claimed_by is not null or code is null
+    or r.invite_hash<>encode(sha256(convert_to(code,'UTF8')),'hex') then
+    raise exception '학번과 ENG3510 개인 초대코드를 확인해 주세요. 이미 등록했다면 해당 계정으로 로그인해 주세요.';
+  end if;
+  insert into team_private.profiles(id,student_number,role,display_id)
+  values(who,sn,r.role,case when r.role='admin' then 0 else nextval('team_private.student_ids') end);
+  update team_private.roster set claimed_by=who where team_private.roster.student_number=sn;
+  return jsonb_build_object('enrolled',true);
+end $$;
+revoke all on function public.tb_enroll(text,text) from public,anon;
+grant execute on function public.tb_enroll(text,text) to authenticated;
+
 create function public.tb_read() returns jsonb language plpgsql security definer set search_path='' as $$
 declare me team_private.profiles; result jsonb;
 begin
   select * into me from team_private.profiles where id=auth.uid();
-  if me.id is null then raise exception '수업 계정으로 로그인해 주세요.'; end if;
+  if auth.uid() is null or not exists(select 1 from auth.users where id=auth.uid()) then
+    raise exception '수업 계정으로 로그인해 주세요.';
+  end if;
+  if me.id is null then
+    return jsonb_build_object('course_code','ENG3510','enrollment_required',true,
+      'account_email',(select email from auth.users where id=auth.uid()));
+  end if;
   select jsonb_build_object(
     'course_code','ENG3510',
     'me',to_jsonb(me),
