@@ -2,9 +2,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { createInterface } from 'node:readline/promises';
 const course=process.env.TEAM_COURSE||'sts2026';
-if(!['sts2026','eng3510'].includes(course))throw Error('Unsupported course');
+if(!['sts2026','eng3510','eng2112'].includes(course))throw Error('Unsupported course');
 const {config}=await import(`../../courses/${course}/2026-fall/team-building/config.js`);
 console.log(`Target course: ${course.toUpperCase()}`);
+if(course!=='sts2026')console.log('ENG3510 and ENG2112 share login accounts. A password change applies to both classrooms.');
 
 const rl=createInterface({input:process.stdin,output:process.stdout});
 const email=(await rl.question('비밀번호를 재설정할 학생의 가입 이메일: ')).trim();
