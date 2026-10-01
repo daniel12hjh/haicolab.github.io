@@ -10,6 +10,8 @@
   "type": "module",
   "scripts": {
     "test": "node database.test.mjs",
-    "test:browser": "node browser.test.mjs"
+    "test:browser": "node browser.test.mjs",
+    "test:teammates": "node idea-teammates.test.mjs",
+    "test:teammates:browser": "node idea-teammates-browser.test.mjs"
   }
 }

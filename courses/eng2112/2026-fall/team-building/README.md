@@ -31,6 +31,7 @@ All classroom data goes through checked `eng2112_read`, `eng2112_enroll` and `en
 ## Operations
 
 - Every proposal requires an explanatory image plus a problem, expected outcome, data plan, methods/tools and contribution. Recruiting teams also describe sought teammates.
+- In **03 / TEAM**, below target size and recruitment, enter the student numbers of already agreed teammates (optional; exclude the leader). Publishing or editing saves the idea and all invitations together. If any number is invalid, nothing in that save is committed. Teammates must still sign in and confirm in **My activity**. Leave the fields blank when recruiting; existing ideas, confirmed members and pending invitations are preserved. Only additional members should be entered when editing. Student numbers are not published with the idea.
 - A team leader can edit recruitment and target size. Small teams do not need to fill four places.
 - Students without an existing team post an idea. Confirming membership in an existing team counts as their representative submission. An application alone does not complete submission.
 - Instructor settings control submission/editing and matching. Turn off both switches to freeze existing-team confirmations too.
@@ -38,6 +39,10 @@ All classroom data goes through checked `eng2112_read`, `eng2112_enroll` and `en
 - The instructor can remove a member or dissolve a team, with an audit entry. Students cannot transfer an established team themselves.
 - Activity is refreshed manually. There are no automatic notification emails or chat.
 - Password email recovery is disabled until SMTP is configured. The local utility `TEAM_COURSE=eng2112 node scripts/team-building/reset-password.mjs` uses hidden input for an administrator key. Resetting a shared account also changes its ENG3510 password.
+
+## Existing-project update (2026-10-01)
+
+Before deploying the updated frontends, run `scripts/team-building/migrations/20261001_shared_classroom_updates.sql` in the **ENG3510/ENG2112 shared project**. It updates both courses’ idea saving and includes the ENG3510 existing-account enrollment fix. It is safe if the earlier enrollment-only migration has already run. Do not rerun `setup.sql` or use this shared-project update in STS2026. Existing ideas, teams and invitations are preserved.
 
 ## Verification
 

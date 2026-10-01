@@ -258,6 +258,23 @@ begin
      update eng2112_private.ideas set title=btrim(payload->>'title'),summary=btrim(payload->>'summary'),problem=btrim(payload->>'problem'),outcome=btrim(payload->>'outcome'),data_plan=btrim(payload->>'data_plan'),technology=btrim(payload->>'technology'),contribution=btrim(payload->>'contribution'),seeking=btrim(coalesce(payload->>'seeking','')),image_path=payload->>'image_path',image_alt=btrim(payload->>'image_alt'),target_size=n,status=status_value,updated_at=now() where id=rid;
    end if;
    if status_value='closed' then update eng2112_private.applications set status='closed' where idea_id=rid and status in ('pending','offered'); end if;
+
+   -- Optional on new and existing ideas; old clients with no list behave unchanged.
+   if jsonb_typeof(coalesce(payload->'existing_members','[]'::jsonb)) is distinct from 'array' then
+     raise exception 'Check the existing teammate student numbers.';
+   end if;
+   if jsonb_array_length(coalesce(payload->'existing_members','[]'::jsonb))>3
+     or exists(select 1 from jsonb_array_elements(coalesce(payload->'existing_members','[]'::jsonb)) x where jsonb_typeof(x)<>'string') then
+     raise exception 'Check the existing teammate student numbers.';
+   end if;
+   for sn in select btrim(value) from jsonb_array_elements_text(coalesce(payload->'existing_members','[]'::jsonb)) loop
+     if sn='' then raise exception 'Check the existing teammate student numbers.'; end if;
+     if exists(select 1 from eng2112_private.invites invite_row where invite_row.idea_id=rid and invite_row.student_number=sn and invite_row.status='pending') then
+       raise exception 'A teammate is already invited or confirmed. Check My activity.';
+     end if;
+     -- Same transaction and course lock: an invalid invitation rolls back the entire save.
+     perform public.eng2112_action('invite_member',jsonb_build_object('idea_id',rid,'student_number',sn));
+   end loop;
    output:=jsonb_build_object('id',rid);
 
  elsif action='comment' then
