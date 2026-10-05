@@ -75,7 +75,7 @@ for (const file of pages) {
   set(d,'.research-home .sec-head p','Four research directions advancing Human–AI Collaboration.');
   for(const [area,r] of Object.entries(research)) {set(d,'.research-card.area-'+area+' .area-subtitle',r.subtitle);set(d,'.research-card.area-'+area+' .area-description',r.overview);set(d,'.research-card.area-'+area+' .area-more','Learn more ↗');}
   set(d,'#awards .sec-head p','Recent recognition for our research and projects.');
-  set(d,'.join p','We are not currently accepting additional research interns or graduate students. Any future openings will be announced on this website.');
+  set(d,'.join p','Research inquiries are welcome from Korean undergraduate and master’s students with learning or practical experience in AI. I am also recruiting graduate students in Sogang University’s Division of English to join under my supervision starting in Spring 2027. Please see Contact for details and supervision requirements.');
  }
  if(file==='research.html') {
   set(d,'.page-head p','Our research centers on Human–AI Collaboration: helping people make better decisions, create, and learn with AI.');
@@ -87,13 +87,33 @@ for (const file of pages) {
   paras[1].textContent='As an Assistant Professor in the Division of English, College of Humanities, at Sogang University, I bring this engineering expertise to the human-centered study of Human–AI Collaboration. As AI becomes embedded across society and industry, I explore how people can work with it as a collaborative partner to strengthen creativity, productivity, and learning.';
   paras[2].textContent='My research and teaching connect the humanities and engineering. I bring insights into language, culture, creativity, and learning to the design and evaluation of AI, while educating students who combine humanistic insight with engineering approaches to problem solving.';
   for(const [ko,en] of [['조소영 (Soyoung Cho)',names.cho],['이서우 (Seowoo Lee)',names.lee],['남고은 (Goeun Nam)',names.nam],['김현재 (Hyunjae Kim)',names.kim]]){for(const e of d.querySelectorAll('.member h3'))if(e.textContent===ko)e.textContent=en;}
+  set(d,'#hyunjae-kim .member-status','Currently serving in the military');
  }
  if(file==='news.html') set(d,'.page-head p','Updates on publications, projects, teaching, and our lab community.');
  if(file==='awards.html') set(d,'.page-head p','Recognition for research and projects by members of HAICoLab.');
  if(file==='contact.html') {
-  set(d,'.page-head p','We welcome inquiries about research collaboration and teaching.');
-  set(d,'.prose','Please email us about research collaboration or teaching. Office hours are available by appointment via email.');
-  set(d,'.recruitment-note','<strong>Recruitment update</strong> · We are not currently accepting additional research interns or graduate students. Any future openings will be announced on this website.',true);
+  set(d,'.page-head p',"We welcome inquiries about research opportunities, graduate supervision, research collaboration, and teaching.");
+  set(d,'#contact .prose',"Please email me about research collaboration or teaching. Office hours are available by appointment via email.");
+  set(d,"#ai-research .recruitment-status","Open for inquiries");
+  set(d,"#ai-research h3","AI Research Opportunities");
+  set(d,"#ai-research .recruitment-audience","Korean undergraduate and master’s students with learning or practical experience in AI");
+  set(d,"#ai-research .recruitment-description","We aim to have our papers accepted at top-tier AI conferences. Please email me with a brief introduction to your research interests and relevant learning, practical, or project experience. Requests to join the lab will be considered individually following an initial discussion.");
+  set(d,"#graduate-supervision .recruitment-status","Recruiting for Spring 2027");
+  set(d,"#graduate-supervision h3","Graduate Supervision");
+  set(d,"#graduate-supervision .recruitment-audience","Graduate students in the Division of English at Sogang University");
+  set(d,"#graduate-supervision .recruitment-description","I am recruiting graduate students to join HAICoLab under my supervision starting in the Spring 2027 semester. Interested students should review the supervision requirements below.");
+  set(d,'.supervision-requirements summary span','Graduate supervision requirements');
+  set(d,'.supervision-requirements summary small','View details');
+  set(d,'.supervision-scope',"These requirements apply to graduate students in the Division of English at Sogang University who wish to join HAICoLab under my supervision.");
+  set(d,'.supervision-rules',`
+              <li><div><h4>Eligibility</h4><p>At the time of application, students must be <strong>in their first, second, or third semester, with at least one year remaining before their expected graduation.</strong></p></div></li>
+              <li><div><h4>Coursework</h4><p>Students must take <strong>at least one course taught by me.</strong> Students who have completed a course, are currently enrolled, or plan to enroll may contact me.</p></div></li>
+              <li><div><h4>Manuscript submission and approval for graduation</h4><p>Students must <strong>submit at least one manuscript to an SCI/SCIE-indexed journal before graduation.</strong> I will not approve graduation as the supervisor until this submission requirement has been fulfilled.</p><p>Submission to a KCI-indexed journal may be pursued afterward, depending on research progress and need.</p></div></li>
+              <li><div><h4>Research support and supervision</h4><p>To support publication in an SCI/SCIE-indexed journal, I will provide ongoing guidance from developing research questions to conducting the study, preparing the manuscript, and submitting it. I will make every effort to provide a supportive research environment. Students are encouraged to approach international journal publication with confidence, supported by close supervision and a structured research process.</p></div></li>
+              <li><div><h4>Regular research meetings</h4><p>Research meetings take place <strong>weekly or every two weeks, including during university vacation periods.</strong> Regular participation and continued research engagement are required.</p></div></li>
+              <li><div><h4>Research continuity and residence in Korea</h4><p>To maintain research continuity, students must <strong>remain in Korea during university vacation periods, except for approximately one week of leave,</strong> unless there are special circumstances. Any exceptions should be discussed with me in advance.</p></div></li>
+            `,true);
+  set(d,'.recruitment-cta .btn','Contact me <span aria-hidden="true">↗</span>',true);
   for(const li of d.querySelectorAll('.kv li'))if(li.firstElementChild.textContent==='Phone')li.lastElementChild.textContent='+82-2-705-8295';
  }
  if(file==='projects.html') {
